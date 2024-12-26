@@ -4,3 +4,4 @@ pyarrow==12.0.1
 python-dotenv==1.0.0
 pytz==2023.3
 colorama==0.4.6
+streamlit-aggrid==0.3.4

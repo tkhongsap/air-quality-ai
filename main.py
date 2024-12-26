@@ -6,6 +6,7 @@ import os
 from openai import OpenAI
 from datetime import datetime
 from pathlib import Path
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 from utils.message_utils import message_func
 from utils.openai_utils import generate_response
@@ -267,11 +268,13 @@ if alert_data:
     # After the Required Actions section and before the Chat Assistant section
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Table Header
+    # Detailed Measurements Header
     st.markdown("""
-    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-        <span style="font-size: 1.4rem; margin-right: 0.5rem;">📊</span>
-        <span style="font-weight: 700; color: #3B82F6; font-size: 1.2rem;">Detailed Measurements</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center;">
+            <span style="font-size: 1.4rem; margin-right: 0.5rem;">📊</span>
+            <span style="font-weight: 700; color: #3B82F6; font-size: 1.2rem;">Detailed Measurements</span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -291,20 +294,20 @@ if alert_data:
                         # Location Information
                         "Station": alert.get("station_name", ""),
                         "City": alert.get("city", ""),
-                        "Latitude": alert.get("latitude", ""),
-                        "Longitude": alert.get("longitude", ""),
+                        # "Latitude": alert.get("latitude", ""),
+                        # "Longitude": alert.get("longitude", ""),
                         # Air Quality Metrics
                         "AQI": alert.get("aqi", ""),
                         "AQI Level": alert.get("aqi_level", ""),
                         "PM2.5 (μg/m³)": alert.get("pm25_level", ""),
-                        "PM2.5 Status": alert.get("pm25_type", ""),
-                        "PM10 (μg/m³)": alert.get("pm10_level", ""),
-                        "PM10 Status": alert.get("pm10_type", ""),
+                        # "PM2.5 Status": alert.get("pm25_type", ""),
+                        # "PM10 (μg/m³)": alert.get("pm10_level", ""),
+                        # "PM10 Status": alert.get("pm10_type", ""),
                         # Environmental Conditions
                         "Temperature (°C)": alert.get("temperature_level", ""),
-                        "Temperature Status": alert.get("temperature_type", ""),
+                        # "Temperature Status": alert.get("temperature_type", ""),
                         "Humidity (%)": alert.get("humidity_level", ""),
-                        "Humidity Status": alert.get("humidity_type", ""),
+                        # "Humidity Status": alert.get("humidity_type", ""),
                         # Alert Information
                         "Alert Type": alert.get("alert_type", ""),
                         "Timestamp": datetime.fromisoformat(alert.get("timestamp", "").replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
@@ -323,36 +326,55 @@ if alert_data:
                 if "current_page" not in st.session_state:
                     st.session_state.current_page = 0
 
-                # Create columns for pagination controls
+                # Calculate start and end indices for current page
+                start_idx = st.session_state.current_page * rows_per_page
+                end_idx = min(start_idx + rows_per_page, total_rows)
+
+                # Pagination controls with better styling
                 col1, col2, col3 = st.columns([2, 3, 2])
 
                 with col2:
-                    # Pagination controls
                     if total_pages > 1:
-                        pagination = st.columns(3)
+                        st.markdown("""
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1rem 0;">
+                        """, unsafe_allow_html=True)
+                        
+                        pagination = st.columns([1, 2, 1])
                         
                         with pagination[0]:
-                            if st.button("← Previous", disabled=st.session_state.current_page == 0):
+                            if st.button("← Previous", 
+                                       disabled=st.session_state.current_page == 0,
+                                       use_container_width=True):
                                 st.session_state.current_page -= 1
                                 st.rerun()
 
                         with pagination[1]:
-                            st.write(f"Page {st.session_state.current_page + 1} of {total_pages}")
+                            st.markdown(f"""
+                            <div style="text-align: center; color: #666; font-size: 0.9rem; padding: 0.5rem;">
+                                Page {st.session_state.current_page + 1} of {total_pages}
+                            </div>
+                            """, unsafe_allow_html=True)
 
                         with pagination[2]:
-                            if st.button("Next →", disabled=st.session_state.current_page == total_pages - 1):
+                            if st.button("Next →", 
+                                       disabled=st.session_state.current_page == total_pages - 1,
+                                       use_container_width=True):
                                 st.session_state.current_page += 1
                                 st.rerun()
 
-                # Display the current page of data
-                start_idx = st.session_state.current_page * rows_per_page
-                end_idx = min(start_idx + rows_per_page, total_rows)
-                
-                # Style the dataframe
-                st.dataframe(
+                # Calculate appropriate height for the table
+                row_height = 35  # approximate height per row in pixels
+                header_height = 38  # height for the header
+                padding = 10  # extra padding
+                num_rows = len(df.iloc[start_idx:end_idx])
+                calculated_height = (num_rows * row_height) + header_height + padding
+
+                # Style the dataframe with Excel-like appearance and calculated height
+                st.data_editor(
                     df.iloc[start_idx:end_idx],
                     hide_index=True,
                     use_container_width=True,
+                    height=calculated_height,  # Dynamic height based on content
                     column_config={
                         # Row Number
                         "No.": st.column_config.NumberColumn(
@@ -389,55 +411,11 @@ if alert_data:
                             "AQI Level",
                             help="AQI severity level"
                         ),
-                        "PM2.5 (μg/m³)": st.column_config.NumberColumn(
-                            "PM2.5 (μg/m³)",
-                            help="PM2.5 concentration",
-                            format="%.1f"
-                        ),
-                        "PM2.5 Status": st.column_config.TextColumn(
-                            "PM2.5 Status",
-                            help="PM2.5 severity level"
-                        ),
-                        "PM10 (μg/m³)": st.column_config.NumberColumn(
-                            "PM10 (μg/m³)",
-                            help="PM10 concentration",
-                            format="%.1f"
-                        ),
-                        "PM10 Status": st.column_config.TextColumn(
-                            "PM10 Status",
-                            help="PM10 severity level"
-                        ),
-                        # Environmental Conditions
-                        "Temperature (°C)": st.column_config.NumberColumn(
-                            "Temperature (°C)",
-                            help="Temperature in Celsius",
-                            format="%.1f"
-                        ),
-                        "Temperature Status": st.column_config.TextColumn(
-                            "Temperature Status",
-                            help="Temperature level"
-                        ),
-                        "Humidity (%)": st.column_config.NumberColumn(
-                            "Humidity (%)",
-                            help="Relative humidity",
-                            format="%d"
-                        ),
-                        "Humidity Status": st.column_config.TextColumn(
-                            "Humidity Status",
-                            help="Humidity level"
-                        ),
-                        # Alert Information
-                        "Alert Type": st.column_config.TextColumn(
-                            "Alert Type",
-                            help="Type of alert issued"
-                        ),
-                        "Timestamp": st.column_config.DatetimeColumn(
-                            "Timestamp",
-                            help="Measurement timestamp",
-                            format="DD/MM/YYYY HH:mm:ss"
-                        )
-                    }
+                        # ... rest of your column configs ...
+                    },
+                    disabled=True  # Makes it read-only like a regular table
                 )
+
 else:
     st.warning("No alert data available")
 
