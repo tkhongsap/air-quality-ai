@@ -84,103 +84,198 @@ def load_alerts():
         return None
     return None
 
-# # Alert Section
-# st.markdown("### Air Quality Command Center")
 
 # Load and display alert information
 alert_data = load_alerts()
 if alert_data:
+    # Alert and Health Implications in two columns
+    col_alert, col_health = st.columns([1, 1])
+    
+    # Alert Card (Left Column)
+    with col_alert:
+        st.markdown("""
+        <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); 
+                    padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 100%;">
+            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">⚠️</span>
+                <span style="font-weight: 600; color: #FF4B4B; font-size: 0.95rem;">Air Quality Warning</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #666; margin: 0; line-height: 1.5;">
+                <span style="margin-right: 0.5rem;">📍</span>
+                {city}
+            </p>
+        </div>
+        """.format(
+            city=alert_data["city"]
+        ), unsafe_allow_html=True)
+
+    # Health Implications Card (Right Column)
+    with col_health:
+        st.markdown("""
+        <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); 
+                    padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 100%;">
+            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">🛡</span>
+                <span style="font-weight: 600; color: #FF4B4B; font-size: 0.95rem;">Health Implications</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #666; margin: 0; line-height: 1.5;">
+                {health}
+            </p>
+        </div>
+        """.format(
+            health=alert_data["health_implications"]
+        ), unsafe_allow_html=True)
+
+    # Add some spacing
+    st.markdown("<br>", unsafe_allow_html=True)
+
     # Create columns for the metric cards
     col1, col2, col3, col4 = st.columns(4)
     
     # AQI Card
     with col1:
         st.markdown("""
-        <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: bold; color: #FF4B4B; margin: 0;">{aqi}</div>
-            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Current AQI</div>
-            <div style="color: #FF4B4B; font-size: 0.7rem;">{level}</div>
+        <div style="background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; color: #FF4B4B; margin-bottom: 0.3rem;">{aqi}</div>
+            <div style="color: #666; font-size: 0.85rem;">Current AQI</div>
         </div>
         """.format(
-            aqi=alert_data["aqi"],
-            level=alert_data["aqi_level"]
+            aqi=alert_data["aqi"]
         ), unsafe_allow_html=True)
 
     # PM2.5 Card
     with col2:
         st.markdown("""
-        <div style="background: linear-gradient(to bottom, rgba(255, 139, 61, 0.1), rgba(255, 139, 61, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: bold; color: #FF8B3D; margin: 0;">{pm25} <span style="font-size: 0.8rem;">μg/m³</span></div>
-            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">PM2.5 Level</div>
-            <div style="color: #FF8B3D; font-size: 0.7rem;">{type}</div>
+        <div style="background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; color: #FF8B3D; margin-bottom: 0.3rem;">{pm25} <span style="font-size: 0.85rem;">μg/m³</span></div>
+            <div style="color: #666; font-size: 0.85rem;">PM2.5 Level</div>
         </div>
         """.format(
-            pm25=alert_data["pm25_level"],
-            type=alert_data["pm25_type"]
+            pm25=alert_data["pm25_level"]
         ), unsafe_allow_html=True)
 
     # Temperature Card
     with col3:
         st.markdown("""
-        <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: bold; color: #3B82F6; margin: 0;">{temp}°C</div>
-            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Temperature</div>
-            <div style="color: #3B82F6; font-size: 0.7rem;">{type}</div>
+        <div style="background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; color: #3B82F6; margin-bottom: 0.3rem;">{temp}°C</div>
+            <div style="color: #666; font-size: 0.85rem;">Temperature</div>
         </div>
         """.format(
-            temp=alert_data["temperature_level"],
-            type=alert_data["temperature_type"]
+            temp=alert_data["temperature_level"]
         ), unsafe_allow_html=True)
 
     # Humidity Card
     with col4:
         st.markdown("""
-        <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
-            <div style="font-size: 1.5rem; font-weight: bold; color: #3B82F6; margin: 0;">{humidity}%</div>
-            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Humidity</div>
-            <div style="color: #3B82F6; font-size: 0.7rem;">{type}</div>
+        <div style="background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; color: #3B82F6; margin-bottom: 0.3rem;">{humidity}%</div>
+            <div style="color: #666; font-size: 0.85rem;">Humidity</div>
         </div>
         """.format(
-            humidity=alert_data["humidity_level"],
-            type=alert_data["humidity_type"]
+            humidity=alert_data["humidity_level"]
         ), unsafe_allow_html=True)
 
     # Add some spacing
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Health Implications Section
+    # Required Actions Header
     st.markdown("""
-    <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); 
-                padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem;">
-        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-            <span style="font-size: 1.2rem; margin-right: 0.5rem;">🫁</span>
-            <span style="font-weight: 600; color: #FF4B4B;">Health Implications</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center;">
+            <span style="font-size: 1.2rem; margin-right: 0.5rem;">⚡</span>
+            <span style="font-weight: 600; color: #3B82F6;">Required Actions</span>
         </div>
-        <p style="font-size: 0.85rem; color: #666; margin: 0; line-height: 1.5;">
-            {health}
-        </p>
+        <div style="background: rgba(255, 75, 75, 0.1); padding: 0.3rem 0.8rem; border-radius: 15px;">
+            <span style="color: #FF4B4B; font-size: 0.8rem; font-weight: 500;">{} Critical Actions</span>
+        </div>
     </div>
-    """.format(
-        health=alert_data["health_implications"]
-    ), unsafe_allow_html=True)
+    """.format(len(alert_data["recommended_actions"])), unsafe_allow_html=True)
 
-    # Recommended Actions Section
-    st.markdown("""
-    <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
-                padding: 1.2rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-            <span style="font-size: 1.2rem; margin-right: 0.5rem;">🛡</span>
-            <span style="font-weight: 600; color: #3B82F6;">Recommended Actions</span>
+    # Priority color mapping
+    priority_colors = {
+        "Immediate": {"bg": "rgba(255, 75, 75, 0.05)", "text": "#FF4B4B", "icon": ""},
+        "Preventive": {"bg": "rgba(255, 193, 7, 0.05)", "text": "#FFC107", "icon": ""},
+        "Long-Term": {"bg": "rgba(59, 130, 246, 0.05)", "text": "#3B82F6", "icon": ""}
+    }
+
+    # First row
+    col1, col2 = st.columns(2)
+    
+    # First row - First card
+    with col1:
+        action_data = alert_data["recommended_actions"][0]
+        priority_style = priority_colors.get(action_data["priority"], priority_colors["Immediate"])
+        st.markdown(f"""
+        <div style="background: {priority_style['bg']}; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; height: 100%; margin-bottom: 0.8rem;">
+            <div style="flex-grow: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: {priority_style['text']}; font-size: 1.2rem;">{priority_style['icon']}</span>
+                    <span style="color: #333; font-weight: 600; font-size: 0.9rem;">{action_data["action"]}</span>
+                </div>
+            </div>
+            <div style="background: white; color: #333; border: 1px solid {priority_style['text']}; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; margin-left: 1rem; font-weight: 500;">
+                {action_data["priority"]}
+            </div>
         </div>
-        <div style="background: white; border-radius: 8px; padding: 1rem;">
-            <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: #666; line-height: 1.8;">
-                {actions}
-            </ul>
+        """, unsafe_allow_html=True)
+
+    # First row - Second card
+    with col2:
+        action_data = alert_data["recommended_actions"][1]
+        priority_style = priority_colors.get(action_data["priority"], priority_colors["Immediate"])
+        st.markdown(f"""
+        <div style="background: {priority_style['bg']}; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; height: 100%; margin-bottom: 0.8rem;">
+            <div style="flex-grow: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: {priority_style['text']}; font-size: 1.2rem;">{priority_style['icon']}</span>
+                    <span style="color: #333; font-weight: 600; font-size: 0.9rem;">{action_data["action"]}</span>
+                </div>
+            </div>
+            <div style="background: white; color: #333; border: 1px solid {priority_style['text']}; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; margin-left: 1rem; font-weight: 500;">
+                {action_data["priority"]}
+            </div>
         </div>
-    </div>
-    """.format(
-        actions="\n".join([f"<li style='margin-bottom: 0.5rem;'>{action}</li>" for action in alert_data["recommended_actions"]])
-    ), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+
+    # Second row
+    col3, col4 = st.columns(2)
+    
+    # Second row - First card
+    with col3:
+        action_data = alert_data["recommended_actions"][2]
+        priority_style = priority_colors.get(action_data["priority"], priority_colors["Immediate"])
+        st.markdown(f"""
+        <div style="background: {priority_style['bg']}; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; height: 100%;">
+            <div style="flex-grow: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: {priority_style['text']}; font-size: 1.2rem;">{priority_style['icon']}</span>
+                    <span style="color: #333; font-weight: 600; font-size: 0.9rem;">{action_data["action"]}</span>
+                </div>
+            </div>
+            <div style="background: white; color: #333; border: 1px solid {priority_style['text']}; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; margin-left: 1rem; font-weight: 500;">
+                {action_data["priority"]}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Second row - Second card
+    with col4:
+        action_data = alert_data["recommended_actions"][3]
+        priority_style = priority_colors.get(action_data["priority"], priority_colors["Immediate"])
+        st.markdown(f"""
+        <div style="background: {priority_style['bg']}; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; height: 100%;">
+            <div style="flex-grow: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: {priority_style['text']}; font-size: 1.2rem;">{priority_style['icon']}</span>
+                    <span style="color: #333; font-weight: 600; font-size: 0.9rem;">{action_data["action"]}</span>
+                </div>
+            </div>
+            <div style="background: white; color: #333; border: 1px solid {priority_style['text']}; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; margin-left: 1rem; font-weight: 500;">
+                {action_data["priority"]}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 else:
     st.warning("No alert data available")
 
