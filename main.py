@@ -148,24 +148,38 @@ if alert_data:
     # Add some spacing
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Health Implications
+    # Health Implications Section
     st.markdown("""
-    <div class="alert-card">
-        <h4>Health Implications</h4>
-        <p>{health}</p>
-    </div>
-    """.format(health=alert_data["health_implications"]), unsafe_allow_html=True)
-
-    # Recommended Actions
-    st.markdown("""
-    <div class="alert-card">
-        <h4>Recommended Actions</h4>
-        <ul>
-            {actions}
-        </ul>
+    <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); 
+                padding: 1rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.5rem;">🫁</span>
+            <span style="font-weight: 600; color: #FF4B4B;">Health Implications</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #666; margin: 0; line-height: 1.5;">
+            {health}
+        </p>
     </div>
     """.format(
-        actions="\n".join([f"<li>{action}</li>" for action in alert_data["recommended_actions"]])
+        health=alert_data["health_implications"]
+    ), unsafe_allow_html=True)
+
+    # Recommended Actions Section
+    st.markdown("""
+    <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+                padding: 1.2rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.5rem;">🛡</span>
+            <span style="font-weight: 600; color: #3B82F6;">Recommended Actions</span>
+        </div>
+        <div style="background: white; border-radius: 8px; padding: 1rem;">
+            <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.85rem; color: #666; line-height: 1.8;">
+                {actions}
+            </ul>
+        </div>
+    </div>
+    """.format(
+        actions="\n".join([f"<li style='margin-bottom: 0.5rem;'>{action}</li>" for action in alert_data["recommended_actions"]])
     ), unsafe_allow_html=True)
 else:
     st.warning("No alert data available")
