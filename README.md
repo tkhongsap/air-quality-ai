@@ -1,11 +1,21 @@
-# Bangkok Air Quality Data Fetcher
+# Air Quality Command Center
 
-This Python script fetches the last 6 hours of air quality data for Bangkok from the WAQI API.
+A real-time air quality monitoring and alert system for Bangkok with AI-powered chat assistance.
+
+## Features
+
+- Real-time air quality monitoring for Bangkok stations
+- AI-powered alerts and recommendations
+- Interactive chat assistant for air quality inquiries
+- Automated data collection and analysis
+- Health implications and recommended actions
 
 ## Requirements
 
 - Python 3.7+
-- Required packages are listed in `requirements.txt`
+- OpenAI API key
+- Required packages in `requirements.txt`
+- Streamlit for dashboard interface
 
 ## Installation
 
@@ -14,34 +24,76 @@ This Python script fetches the last 6 hours of air quality data for Bangkok from
 ```bash
 pip install -r requirements.txt
 ```
+3. Set up environment:
+   - Create `.env` file with your OpenAI API key
+   - Configure `.streamlit/secrets.toml` for Streamlit
+
+## Project Structure
+
+```
+.
+├── main.py                     # Main Streamlit dashboard
+├── utils/
+│   ├── message_utils.py        # Chat message formatting utilities
+│   └── prompt_instructions.py  # AI prompt templates
+├── scripts/
+│   ├── 00-get_bangkok_aqi.py  # Data collection script
+│   ├── 01-extract-alerts-actions.py  # Alert generation
+│   └── 04-chat-assistant.py   # Chat assistant implementation
+└── output/
+    ├── hourly/                # Raw AQI data storage
+    └── alerts/                # Processed alerts
+```
 
 ## Usage
 
-Simply run the script:
+1. Start data collection:
 ```bash
-python get_bangkok_aqi.py
+python scripts/00-get_bangkok_aqi.py
 ```
 
-The script will:
-1. Fetch the latest air quality data from Bangkok station (ID: 7398)
-2. Process and display the data in a formatted table
-3. Save the data to a CSV file named 'bangkok_aqi_data.csv'
+2. Generate alerts:
+```bash
+python scripts/01-extract-alerts-actions.py
+```
+
+3. Launch dashboard:
+```bash
+streamlit run main.py
+```
+
+## Data Processing Pipeline
+
+1. **Data Collection**: Fetches real-time AQI data from Bangkok stations
+2. **Alert Generation**: AI processes data to generate alerts and recommendations
+3. **Dashboard Display**: Shows current metrics and chat interface
+4. **Chat Assistance**: Provides interactive air quality guidance
 
 ## Output Format
 
-The script outputs data with the following columns:
-- timestamp: Date and time of measurement (YYYY-MM-DD HH:MM:SS)
-- aqi: Air Quality Index
-- pm25: PM2.5 concentration
-- pm10: PM10 concentration
-- temperature: Temperature in Celsius
-- humidity: Relative humidity percentage
+The system processes and displays:
+- AQI (Air Quality Index)
+- PM2.5 Levels
+- Temperature
+- Humidity
+- Health Implications
+- Recommended Actions
 
-## Error Handling
+## Files and Directories
 
-The script includes error handling for:
-- API connection failures
-- Invalid API responses
-- Missing data fields
+- `main.py`: Streamlit dashboard with real-time metrics and chat
+- `utils/message_utils.py`: Chat interface formatting
+- `utils/prompt_instructions.py`: AI prompt templates
+- `output/hourly/`: Raw AQI data storage
+- `output/alerts/`: Processed alerts and recommendations
 
-If any errors occur, the script will display an appropriate error message and exit. 
+## Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
+
+## License
+
+[Add your license information here] 
