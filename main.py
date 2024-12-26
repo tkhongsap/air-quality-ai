@@ -96,10 +96,10 @@ if alert_data:
     # AQI Card
     with col1:
         st.markdown("""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold; color: #FF4B4B;">{aqi}</div>
-            <div style="color: #666; font-size: 0.9rem;">Current AQI</div>
-            <div style="color: #FF4B4B; font-size: 0.8rem; margin-top: 0.5rem;">{level}</div>
+        <div style="background: linear-gradient(to bottom, rgba(255, 75, 75, 0.1), rgba(255, 75, 75, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #FF4B4B; margin: 0;">{aqi}</div>
+            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Current AQI</div>
+            <div style="color: #FF4B4B; font-size: 0.7rem;">{level}</div>
         </div>
         """.format(
             aqi=alert_data["aqi"],
@@ -109,10 +109,10 @@ if alert_data:
     # PM2.5 Card
     with col2:
         st.markdown("""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold; color: #FF8B3D;">{pm25}</div>
-            <div style="color: #666; font-size: 0.9rem;">PM2.5 Level</div>
-            <div style="color: #FF8B3D; font-size: 0.8rem; margin-top: 0.5rem;">{type}</div>
+        <div style="background: linear-gradient(to bottom, rgba(255, 139, 61, 0.1), rgba(255, 139, 61, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #FF8B3D; margin: 0;">{pm25} <span style="font-size: 0.8rem;">μg/m³</span></div>
+            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">PM2.5 Level</div>
+            <div style="color: #FF8B3D; font-size: 0.7rem;">{type}</div>
         </div>
         """.format(
             pm25=alert_data["pm25_level"],
@@ -122,10 +122,10 @@ if alert_data:
     # Temperature Card
     with col3:
         st.markdown("""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold; color: #3B82F6;">{temp}°C</div>
-            <div style="color: #666; font-size: 0.9rem;">Temperature</div>
-            <div style="color: #3B82F6; font-size: 0.8rem; margin-top: 0.5rem;">{type}</div>
+        <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #3B82F6; margin: 0;">{temp}°C</div>
+            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Temperature</div>
+            <div style="color: #3B82F6; font-size: 0.7rem;">{type}</div>
         </div>
         """.format(
             temp=alert_data["temperature_level"],
@@ -135,10 +135,10 @@ if alert_data:
     # Humidity Card
     with col4:
         st.markdown("""
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <div style="font-size: 2rem; font-weight: bold; color: #3B82F6;">{humidity}%</div>
-            <div style="color: #666; font-size: 0.9rem;">Humidity</div>
-            <div style="color: #3B82F6; font-size: 0.8rem; margin-top: 0.5rem;">{type}</div>
+        <div style="background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); padding: 0.9rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+            <div style="font-size: 1.5rem; font-weight: bold; color: #3B82F6; margin: 0;">{humidity}%</div>
+            <div style="color: #666; font-size: 0.8rem; margin: 0.2rem 0;">Humidity</div>
+            <div style="color: #3B82F6; font-size: 0.7rem;">{type}</div>
         </div>
         """.format(
             humidity=alert_data["humidity_level"],

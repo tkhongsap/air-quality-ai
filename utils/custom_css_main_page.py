@@ -2,7 +2,11 @@ def get_main_custom_css():
     return """
     <style>
     .stApp {
-        background-color: #f8f9fa;
+        background: linear-gradient(to right, #f5f5f5, #e8e8e8);
+    }
+    
+    .stMarkdown div[data-testid="stMarkdownContainer"] > div {
+        background-color: rgba(255, 255, 255, 0.95) !important;
     }
     
     .gradient-text {

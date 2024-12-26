@@ -9,11 +9,12 @@ def get_chat_assistant_banner():
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         margin-bottom: 1.2rem;
-        text-align: left;
+        text-align: center;
         font-family: 'Inter', sans-serif;
         position: relative;
         overflow: hidden;
     }
+    
     .main-header::before {
         content: '';
         position: absolute;
@@ -24,32 +25,39 @@ def get_chat_assistant_banner():
         background: linear-gradient(45deg, rgba(245, 245, 245, 0.5), rgba(232, 232, 232, 0.5));
         z-index: 1;
     }
+    
     .main-header > * {
         position: relative;
         z-index: 2;
     }
+    
     .main-header h1 {
         color: #333333;
         font-size: 1.8rem;
         font-weight: 700;
         margin: 0;
-        text-align: left;
+        text-align: center;
         letter-spacing: 0.01em;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
     }
+    
     .main-header p {
         color: #666666;
         font-size: 1rem;
         margin: 0.5rem 0 0 0;
         text-align: left;
     }
+    
     .benefit-pills {
         display: flex;
         gap: 2rem;
         margin-top: 0.8rem;
+        justify-content: center;
     }
+    
     .benefit-pill {
         color: #666666;
         font-weight: 500;
@@ -61,6 +69,7 @@ def get_chat_assistant_banner():
         position: relative;
         padding-bottom: 3px;
     }
+    
     .benefit-pill:after {
         content: '';
         position: absolute;
