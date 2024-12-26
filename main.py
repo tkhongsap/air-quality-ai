@@ -263,6 +263,181 @@ if alert_data:
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+    # After the Required Actions section and before the Chat Assistant section
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Table Header
+    st.markdown("""
+    <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+        <span style="font-size: 1.4rem; margin-right: 0.5rem;">📊</span>
+        <span style="font-weight: 700; color: #3B82F6; font-size: 1.2rem;">Detailed Measurements</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Load all alerts from the file
+    latest_file = get_latest_alert_file()
+    if latest_file:
+        with open(latest_file, 'r', encoding='utf-8') as f:
+            all_data = json.load(f)
+            alerts_data = all_data.get("alerts", [])
+
+            if alerts_data:
+                # Create a list of dictionaries for the table
+                table_data = []
+                for index, alert in enumerate(alerts_data, 1):
+                    table_data.append({
+                        "No.": index,
+                        # Location Information
+                        "Station": alert.get("station_name", ""),
+                        "City": alert.get("city", ""),
+                        "Latitude": alert.get("latitude", ""),
+                        "Longitude": alert.get("longitude", ""),
+                        # Air Quality Metrics
+                        "AQI": alert.get("aqi", ""),
+                        "AQI Level": alert.get("aqi_level", ""),
+                        "PM2.5 (μg/m³)": alert.get("pm25_level", ""),
+                        "PM2.5 Status": alert.get("pm25_type", ""),
+                        "PM10 (μg/m³)": alert.get("pm10_level", ""),
+                        "PM10 Status": alert.get("pm10_type", ""),
+                        # Environmental Conditions
+                        "Temperature (°C)": alert.get("temperature_level", ""),
+                        "Temperature Status": alert.get("temperature_type", ""),
+                        "Humidity (%)": alert.get("humidity_level", ""),
+                        "Humidity Status": alert.get("humidity_type", ""),
+                        # Alert Information
+                        "Alert Type": alert.get("alert_type", ""),
+                        "Timestamp": datetime.fromisoformat(alert.get("timestamp", "").replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S")
+                    })
+
+                # Convert to DataFrame
+                import pandas as pd
+                df = pd.DataFrame(table_data)
+
+                # Calculate number of pages
+                rows_per_page = 20
+                total_rows = len(df)
+                total_pages = (total_rows + rows_per_page - 1) // rows_per_page
+
+                # Add page selector to session state if not exists
+                if "current_page" not in st.session_state:
+                    st.session_state.current_page = 0
+
+                # Create columns for pagination controls
+                col1, col2, col3 = st.columns([2, 3, 2])
+
+                with col2:
+                    # Pagination controls
+                    if total_pages > 1:
+                        pagination = st.columns(3)
+                        
+                        with pagination[0]:
+                            if st.button("← Previous", disabled=st.session_state.current_page == 0):
+                                st.session_state.current_page -= 1
+                                st.rerun()
+
+                        with pagination[1]:
+                            st.write(f"Page {st.session_state.current_page + 1} of {total_pages}")
+
+                        with pagination[2]:
+                            if st.button("Next →", disabled=st.session_state.current_page == total_pages - 1):
+                                st.session_state.current_page += 1
+                                st.rerun()
+
+                # Display the current page of data
+                start_idx = st.session_state.current_page * rows_per_page
+                end_idx = min(start_idx + rows_per_page, total_rows)
+                
+                # Style the dataframe
+                st.dataframe(
+                    df.iloc[start_idx:end_idx],
+                    hide_index=True,
+                    use_container_width=True,
+                    column_config={
+                        # Row Number
+                        "No.": st.column_config.NumberColumn(
+                            "No.",
+                            help="Record number",
+                            format="%d"
+                        ),
+                        # Location Information
+                        "Station": st.column_config.TextColumn(
+                            "Station",
+                            help="Monitoring station name"
+                        ),
+                        "City": st.column_config.TextColumn(
+                            "City",
+                            help="City name"
+                        ),
+                        "Latitude": st.column_config.NumberColumn(
+                            "Latitude",
+                            help="Station latitude",
+                            format="%.4f"
+                        ),
+                        "Longitude": st.column_config.NumberColumn(
+                            "Longitude",
+                            help="Station longitude",
+                            format="%.4f"
+                        ),
+                        # Air Quality Metrics
+                        "AQI": st.column_config.NumberColumn(
+                            "AQI",
+                            help="Air Quality Index",
+                            format="%d"
+                        ),
+                        "AQI Level": st.column_config.TextColumn(
+                            "AQI Level",
+                            help="AQI severity level"
+                        ),
+                        "PM2.5 (μg/m³)": st.column_config.NumberColumn(
+                            "PM2.5 (μg/m³)",
+                            help="PM2.5 concentration",
+                            format="%.1f"
+                        ),
+                        "PM2.5 Status": st.column_config.TextColumn(
+                            "PM2.5 Status",
+                            help="PM2.5 severity level"
+                        ),
+                        "PM10 (μg/m³)": st.column_config.NumberColumn(
+                            "PM10 (μg/m³)",
+                            help="PM10 concentration",
+                            format="%.1f"
+                        ),
+                        "PM10 Status": st.column_config.TextColumn(
+                            "PM10 Status",
+                            help="PM10 severity level"
+                        ),
+                        # Environmental Conditions
+                        "Temperature (°C)": st.column_config.NumberColumn(
+                            "Temperature (°C)",
+                            help="Temperature in Celsius",
+                            format="%.1f"
+                        ),
+                        "Temperature Status": st.column_config.TextColumn(
+                            "Temperature Status",
+                            help="Temperature level"
+                        ),
+                        "Humidity (%)": st.column_config.NumberColumn(
+                            "Humidity (%)",
+                            help="Relative humidity",
+                            format="%d"
+                        ),
+                        "Humidity Status": st.column_config.TextColumn(
+                            "Humidity Status",
+                            help="Humidity level"
+                        ),
+                        # Alert Information
+                        "Alert Type": st.column_config.TextColumn(
+                            "Alert Type",
+                            help="Type of alert issued"
+                        ),
+                        "Timestamp": st.column_config.DatetimeColumn(
+                            "Timestamp",
+                            help="Measurement timestamp",
+                            format="DD/MM/YYYY HH:mm:ss"
+                        )
+                    }
+                )
 else:
     st.warning("No alert data available")
 
