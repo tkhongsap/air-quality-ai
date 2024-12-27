@@ -465,5 +465,3 @@ if prompt:
     response = generate_response(prompt, assistant_id, None)
     st.session_state.chat_messages.append({"role": "assistant", "content": response})
     message_func(response, user_icon_base64, assistant_icon_base64)
-
-
