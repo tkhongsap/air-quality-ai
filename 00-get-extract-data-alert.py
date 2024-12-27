@@ -118,6 +118,16 @@ def process_station_data(raw_data, station_info):
         city = station_name.split(',')[0].strip()
         city = city.replace('Bangkok', '').strip() if 'Bangkok' in city else city
         
+        # Convert AQI to float or None if invalid
+        aqi = data.get('aqi')
+        try:
+            if aqi and str(aqi).strip() != '-':
+                aqi = float(aqi)
+            else:
+                aqi = None
+        except (ValueError, TypeError):
+            aqi = None
+        
         return {
             'station_name': station_name,
             'station_id': station_info.get('uid'),
@@ -125,7 +135,7 @@ def process_station_data(raw_data, station_info):
             'latitude': station_info.get('station', {}).get('geo', [None, None])[0],
             'longitude': station_info.get('station', {}).get('geo', [None, None])[1],
             'timestamp': data.get('time', {}).get('s'),
-            'aqi': data.get('aqi'),
+            'aqi': aqi,
             'pm25': iaqi.get('pm25', {}).get('v'),
             'pm10': iaqi.get('pm10', {}).get('v'),
             'temperature': iaqi.get('t', {}).get('v'),
@@ -136,15 +146,41 @@ def process_station_data(raw_data, station_info):
         return None
 
 def generate_alerts(records):
-    """Generate alerts using OpenAI API"""
+    """Generate alerts for stations with AQI >= 50"""
+    # Filter records with valid AQI >= 50
+    alert_worthy_records = []
+    for record in records:
+        try:
+            aqi_value = record.get('aqi')
+            if aqi_value and str(aqi_value).strip() != '-':  # Check for '-' string
+                aqi_float = float(aqi_value)
+                if aqi_float >= 50:
+                    record['aqi'] = aqi_float  # Store as float
+                    alert_worthy_records.append(record)
+        except (ValueError, TypeError):
+            continue
+    
+    # Sort by AQI value in descending order
+    alert_worthy_records = sorted(
+        alert_worthy_records, 
+        key=lambda x: float(x['aqi']), 
+        reverse=True
+    )
+    
+    if not alert_worthy_records:
+        print(f"{Fore.YELLOW}No stations found with valid AQI >= 50{Style.RESET_ALL}")
+        return []
+
+    print(f"{Fore.YELLOW}Generating alerts for {len(alert_worthy_records)} stations with AQI >= 50{Style.RESET_ALL}")
+    
     client = OpenAI()
     
     aqi_data = {
         'query_timestamp': get_rounded_hour_timestamp(),
         'city': 'Bangkok',
-        'total_stations': len(records),
-        'total_data_points': len(records),
-        'data': records
+        'total_stations': len(alert_worthy_records),
+        'total_data_points': len(alert_worthy_records),
+        'data': alert_worthy_records
     }
     
     try:
@@ -162,7 +198,7 @@ def generate_alerts(records):
         
     except Exception as e:
         print(f"{Fore.RED}Error generating alerts with OpenAI: {e}{Style.RESET_ALL}")
-        return generate_basic_alerts(records)
+        return generate_basic_alerts(alert_worthy_records)
 
 def generate_basic_alerts(records):
     """Fallback function for basic alert generation without OpenAI"""
@@ -171,14 +207,15 @@ def generate_basic_alerts(records):
         if record['aqi'] is None:
             continue
             
-        aqi_category = get_aqi_category(record['aqi'])
-        alert_level = get_alert_level(record['aqi'])
+        aqi = float(record['aqi'])
+        aqi_category = get_aqi_category(aqi)
+        alert_level = get_alert_level(aqi)
         
         alerts.append({
             'timestamp': record['timestamp'],
             'station_name': record['station_name'],
             'city': record['city'],
-            'aqi': record['aqi'],
+            'aqi': aqi,
             'pm25_level': record['pm25'],
             'pm25_type': 'Normal' if record['pm25'] <= 50 else 'Above Threshold',
             'pm10_level': record['pm10'],
@@ -191,15 +228,43 @@ def generate_basic_alerts(records):
             'longitude': record['longitude'],
             'aqi_level': aqi_category,
             'alert_type': f'Air Quality {alert_level.title()}',
-            'health_implications': f'AQI is {aqi_category}. Take necessary precautions.',
-            'recommended_actions': [
-                {
-                    'action': '😷 Monitor air quality and take precautions',
-                    'priority': 'Preventive'
-                }
-            ]
+            'health_implications': get_health_implications(aqi_category),
+            'recommended_actions': get_recommended_actions(aqi_category)
         })
     return alerts
+
+def get_health_implications(aqi_category):
+    """Get health implications based on AQI category"""
+    implications = {
+        'Moderate': 'Air quality is acceptable; however, some pollutants may affect very sensitive individuals.',
+        'Unhealthy for Sensitive Groups': 'Members of sensitive groups may experience health effects. General public is less likely to be affected.',
+        'Unhealthy': 'Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects.',
+        'Very Unhealthy': 'Health alert: The risk of health effects is increased for everyone.',
+        'Hazardous': 'Health warning of emergency conditions: everyone is more likely to be affected.'
+    }
+    return implications.get(aqi_category, 'Air quality is generally good.')
+
+def get_recommended_actions(aqi_category):
+    """Get recommended actions based on AQI category"""
+    base_actions = [
+        {'action': '😷 Wear masks when outdoors', 'priority': 'Immediate'},
+        {'action': '🪟 Keep windows closed during peak pollution', 'priority': 'Preventive'}
+    ]
+    
+    if aqi_category in ['Unhealthy', 'Very Unhealthy', 'Hazardous']:
+        return [
+            {'action': '🚫 Avoid outdoor activities', 'priority': 'Immediate'},
+            {'action': '🏠 Stay indoors with air purifiers', 'priority': 'Immediate'},
+            {'action': '😷 Wear N95 masks if outdoors', 'priority': 'Immediate'},
+            {'action': '⚕️ Monitor health symptoms', 'priority': 'Immediate'}
+        ]
+    elif aqi_category == 'Unhealthy for Sensitive Groups':
+        return [
+            {'action': '🌳 Sensitive groups should limit outdoor exposure', 'priority': 'Immediate'},
+            {'action': '🌬️ Use air purifiers indoors', 'priority': 'Preventive'}
+        ] + base_actions
+    else:
+        return base_actions
 
 def get_rounded_hour_timestamp():
     """Get current timestamp rounded down to the nearest hour"""

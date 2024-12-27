@@ -106,7 +106,6 @@ def get_air_quality_system_prompt():
         "}\n\n"
         
         "Important Rules:\n"
-        "1. Only include stations with AQI > 100.\n"
         "2. Provide contextual descriptions for all metrics, including PM2.5, PM10, temperature, and humidity.\n"
         "3. Ensure all numeric values are numbers, not strings.\n"
         "4. Timestamp must be in ISO8601 format with timezone.\n"
