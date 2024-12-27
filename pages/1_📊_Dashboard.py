@@ -3,13 +3,13 @@ import json
 
 from datetime import datetime
 from pathlib import Path
-from utils.custom_css_banner import get_chat_assistant_banner
+from utils.custom_css_banner import get_dashboard_banner
 
 # Set page config
 st.set_page_config(page_title="📊 Dashboard", page_icon="", layout="wide")
 
 # Display the custom banner in the UI
-st.markdown(get_chat_assistant_banner(), unsafe_allow_html=True)
+st.markdown(get_dashboard_banner(), unsafe_allow_html=True)
 
 # Custom CSS for responsive layout
 st.markdown("""
